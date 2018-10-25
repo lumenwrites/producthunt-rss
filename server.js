@@ -68,21 +68,21 @@ function init() {
 
 function auth(cb) {
     unirest.post('https://api.producthunt.com/v1/oauth/token')
-        .header('Accept', 'application/json')
-        .send({
-            'client_id': config.client_id,
-            'client_secret': config.client_secret,
-            'grant_type': "client_credentials"
-        })
-        .end(function (response) {
-            if (response.body.error) {
-                console.error(response.body.error_description)
-            } else {
-                ph.access_token = response.body.access_token
-                ph.expires = response.body.created_at * 1000 + Date.now()
-                cb()
-            }
-        })
+           .header('Accept', 'application/json')
+           .send({
+               'client_id': config.client_id,
+               'client_secret': config.client_secret,
+               'grant_type': "client_credentials"
+           })
+           .end(function (response) {
+               if (response.body.error) {
+                   console.error(response.body.error_description)
+               } else {
+                   ph.access_token = response.body.access_token
+                   ph.expires = response.body.created_at * 1000 + Date.now()
+                   cb()
+               }
+           })
 }
 
 /**
@@ -95,12 +95,12 @@ function getCurrentPosts(cb) {
     if (ph.expires > Date.now()) { // if not expired?
 	/* console.log('not expired') */
         unirest.get('https://api.producthunt.com/v1/posts')
-            .header('Accept', 'application/json')
-            .header('Authorization', 'Bearer ' + ph.access_token)
-            .end(function (response) {
-		console.log('end',response)
-                cb(response.body.posts)
-            })
+               .header('Accept', 'application/json')
+               .header('Authorization', 'Bearer ' + ph.access_token)
+               .end(function (response) {
+		   console.log('end',response)
+                   cb(response.body.posts)
+               })
     } else {
 	auth(() => { getCurrentPosts(cb) })
     }
@@ -124,7 +124,7 @@ function cronRun() {
             'new': false
         }
 
-       getCurrentPosts(function (new_posts) {
+	getCurrentPosts(function (new_posts) {
 	    console.log(new_posts)
             new_posts.forEach(function (post) {
                 if (post.votes_count > ph.limit && !findById(data.posts, post.id)) {
@@ -153,7 +153,7 @@ function renderRSS() {
     var feed = new rss({
         title: 'Product Hunt RSS',
         description: 'Product Hunt is a curation of the best new products, every day. Discover the latest mobile apps, websites, and technology products that everyone&#39s talking about.',
-        feed_url: 'http://keno.digital/project/producthunt-rss/rss.xml',
+        feed_url: 'https://phrss.startuplab.io/',
         site_url: 'http://producthunt.com',
         image_url: 'http://assets.producthunt.com/assets/ph-ios-icon-f989a27d98b173973ce47298cb86cc0c.png',
         language: 'en',
